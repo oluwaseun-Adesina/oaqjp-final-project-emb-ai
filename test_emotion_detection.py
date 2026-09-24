@@ -1,42 +1,36 @@
-"""Unit tests for the EmotionDetection package.
-
-These tests use the environment variable `EMOTION_DETECTOR_FORCE_LOCAL`
-to ensure the local deterministic analyzer is used so tests are stable
-even without network access.
-"""
-import os
-
-from EmotionDetection import emotion_detector
+"""Unit tests for the EmotionDetection package."""
+import unittest
+from EmotionDetection.emotion_detection import emotion_detector
 
 
-def setup_module():
-    os.environ["EMOTION_DETECTOR_FORCE_LOCAL"] = "1"
+class TestEmotionDetector(unittest.TestCase):
+    """Test cases for the emotion_detector function."""
+
+    def test_joy(self):
+        """'I am glad this happened' should be dominated by joy."""
+        result = emotion_detector('I am glad this happened')
+        self.assertEqual(result['dominant_emotion'], 'joy')
+
+    def test_anger(self):
+        """'I am really mad about this' should be dominated by anger."""
+        result = emotion_detector('I am really mad about this')
+        self.assertEqual(result['dominant_emotion'], 'anger')
+
+    def test_disgust(self):
+        """'I feel disgusted just hearing about this' should be disgust."""
+        result = emotion_detector('I feel disgusted just hearing about this')
+        self.assertEqual(result['dominant_emotion'], 'disgust')
+
+    def test_sadness(self):
+        """'I am so sad about this' should be dominated by sadness."""
+        result = emotion_detector('I am so sad about this')
+        self.assertEqual(result['dominant_emotion'], 'sadness')
+
+    def test_fear(self):
+        """'I am really afraid that this will happen' should be fear."""
+        result = emotion_detector('I am really afraid that this will happen')
+        self.assertEqual(result['dominant_emotion'], 'fear')
 
 
-def teardown_module():
-    os.environ.pop("EMOTION_DETECTOR_FORCE_LOCAL", None)
-
-
-def assert_dominant(text: str, expected: str) -> None:
-    res = emotion_detector(text)
-    assert res["dominant_emotion"] == expected
-
-
-def test_joy():
-    assert_dominant("I am glad this happened", "joy")
-
-
-def test_anger():
-    assert_dominant("I am really mad about this", "anger")
-
-
-def test_disgust():
-    assert_dominant("I feel disgusted just hearing about this", "disgust")
-
-
-def test_sadness():
-    assert_dominant("I am so sad about this", "sadness")
-
-
-def test_fear():
-    assert_dominant("I am really afraid that this will happen", "fear")
+if __name__ == "__main__":
+    unittest.main()
